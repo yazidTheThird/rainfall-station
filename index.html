@@ -68,6 +68,17 @@ body {
 .location-bar input:focus { outline: none; border-color: #00d4ff; }
 .location-bar label { font-size: 0.7em; color: #5a7a9a; }
 .location-bar .coords { display: flex; gap: 6px; align-items: center; }
+.location-bar select {
+  background: #0a0e1a;
+  border: 1px solid #1a2a4a;
+  color: #b0e0ff;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.7em;
+  max-width: 160px;
+}
+.location-bar select:focus { outline: none; border-color: #00d4ff; }
 .location-btn {
   background: #1a2a4a;
   color: #00d4ff;
@@ -81,32 +92,34 @@ body {
 }
 .location-btn:hover { background: #2a4a6a; border-color: #00d4ff; }
 .location-btn.active { background: #2a4a6a; border-color: #00d4ff; }
+.location-btn.danger { color: #ff6644; border-color: #4a2a2a; }
+.location-btn.danger:hover { background: #3a1a1a; border-color: #ff6644; }
 #map { height: 200px; border-radius: 8px; border: 1px solid #1a2a4a; margin-bottom: 15px; z-index: 1; }
 
 /* Period cards */
 .period-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin-bottom: 16px;
 }
 .period-card {
   background: #0f1525;
   border: 1px solid #1a2a4a;
   border-radius: 8px;
-  padding: 14px 12px;
+  padding: 14px 10px;
   text-align: center;
 }
 .period-card .period-name {
   font-family: 'Orbitron', monospace;
-  font-size: 0.65em;
+  font-size: 0.6em;
   color: #3a6a8a;
   letter-spacing: 2px;
   margin-bottom: 10px;
   text-transform: uppercase;
 }
 .period-card .rain-total {
-  font-size: 2em;
+  font-size: 1.8em;
   font-weight: 700;
   color: #00d4ff;
   text-shadow: 0 0 12px rgba(0,212,255,0.2);
@@ -115,7 +128,7 @@ body {
 .period-card .rain-total.high { color: #ff6600; text-shadow: 0 0 12px rgba(255,102,0,0.3); }
 .period-card .rain-total.very-high { color: #ff4444; text-shadow: 0 0 12px rgba(255,68,68,0.3); }
 .period-card .rain-label {
-  font-size: 0.55em;
+  font-size: 0.5em;
   color: #5a7a9a;
   margin-top: 2px;
   letter-spacing: 1px;
@@ -130,18 +143,42 @@ body {
 }
 .period-card .temp-item { text-align: center; }
 .period-card .temp-item .temp-val {
-  font-size: 0.8em;
+  font-size: 0.75em;
   font-weight: 700;
 }
 .period-card .temp-item .temp-val.high { color: #ff8844; }
 .period-card .temp-item .temp-val.low { color: #66bbff; }
 .period-card .temp-item .temp-val.avg { color: #88dd88; }
 .period-card .temp-item .temp-label {
-  font-size: 0.45em;
+  font-size: 0.4em;
   color: #3a5a7a;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+/* Custom period bar */
+.custom-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  background: #0f1525;
+  border: 1px solid #1a2a4a;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+.custom-bar label { font-size: 0.6em; color: #5a7a9a; text-transform: uppercase; letter-spacing: 1px; }
+.custom-bar input[type="date"] {
+  background: #0a0e1a;
+  border: 1px solid #1a2a4a;
+  color: #b0e0ff;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 0.7em;
+}
+.custom-bar input[type="date"]:focus { outline: none; border-color: #00d4ff; }
 
 /* Current conditions row */
 .current-bar {
@@ -227,20 +264,23 @@ body {
 .status-bar .dot.loading { background: #ffaa00; box-shadow: 0 0 6px rgba(255,170,0,0.5); animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+@media (max-width: 800px) {
+  .period-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 640px) {
   body { padding: 10px; }
   .header h1 { font-size: 1.1em; letter-spacing: 2px; }
   .period-grid { grid-template-columns: 1fr; gap: 10px; }
   .location-bar { flex-direction: column; align-items: stretch; }
   .location-bar .coords { justify-content: center; }
+  .custom-bar { flex-direction: column; align-items: stretch; }
   .forecast-grid { grid-template-columns: repeat(7, 1fr); gap: 3px; }
   .fc-day { padding: 5px 2px; }
   #map { height: 160px; }
 }
 
-/* Comparison line (vs normal) */
 .period-card .comparison {
-  font-size: 0.45em;
+  font-size: 0.4em;
   color: #3a5a7a;
   margin-top: 4px;
 }
@@ -270,7 +310,28 @@ body {
 
   <div id="map" style="display:none;"></div>
 
+  <!-- Saved locations -->
+  <div class="location-bar" style="margin-bottom:15px;padding:8px 15px;">
+    <label style="font-size:0.6em;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px;">Saved</label>
+    <select id="savedSelect">
+      <option value="">— Select a saved location —</option>
+    </select>
+    <button class="location-btn" id="loadLocBtn">📂 GO</button>
+    <button class="location-btn" id="saveLocBtn">💾 SAVE</button>
+    <button class="location-btn danger" id="delLocBtn">🗑 DEL</button>
+  </div>
+
+  <!-- Period cards (3 default + 1 custom) -->
   <div class="period-grid" id="periodGrid"></div>
+
+  <!-- Custom date range -->
+  <div class="custom-bar">
+    <label>Custom Period</label>
+    <input type="date" id="customStart">
+    <span style="color:#5a7a9a;font-size:0.6em;">→</span>
+    <input type="date" id="customEnd">
+    <button class="location-btn" id="customFetchBtn">▶ FETCH</button>
+  </div>
 
   <div class="current-bar" id="currentBar"></div>
 
@@ -297,26 +358,20 @@ const WMOI = {0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
   51:'🌦',53:'🌦',55:'🌧',61:'🌦',63:'🌧',65:'🌧',
   80:'🌦',81:'🌧',82:'🌧',95:'⛈',96:'⛈',99:'⛈'};
 const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
-const MONTH_RAIN_AVG = {
-  // Default moderate climate references (mm/month)
-  default: { jan:78,feb:63,mar:56,apr:40,may:25,jun:8,jul:2,aug:4,sep:22,oct:50,nov:72,dec:82 }
-};
+const LS_KEY = 'rainfall_station_locations';
 
 let map, marker;
 let mapVisible = false;
 let lat = 33.5731, lon = -7.5898;
+let customResult = null; // stores latest custom period result
 
 function $(id) { return document.getElementById(id); }
 function fmt(d) { return (d != null && !isNaN(d)) ? Number(d).toFixed(1) : '--'; }
 function fmt0(d) { return (d != null && !isNaN(d)) ? Math.round(d) : '--'; }
-
-function rainClass(v) {
-  if (!v || v <= 0) return '';
-  if (v < 1) return ''; // light blue default
-  if (v < 4) return '';
-  return '';
+function mkDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
+
 function rainTotalClass(v) {
   if (!v || v <= 0) return '';
   if (v > 200) return 'very-high';
@@ -324,51 +379,91 @@ function rainTotalClass(v) {
   return '';
 }
 
-function initMap() {
-  map = L.map('map', { zoomControl: true }).setView([lat, lon], 10);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap',
-    maxZoom: 18
-  }).addTo(map);
-  marker = L.marker([lat, lon], { draggable: true }).addTo(map);
-  marker.on('dragend', () => {
-    const p = marker.getLatLng();
-    lat = parseFloat(p.lat.toFixed(4)); lon = parseFloat(p.lng.toFixed(4));
-    $('latInput').value = lat.toFixed(4);
-    $('lonInput').value = lon.toFixed(4);
-    fetchAll();
-  });
-  map.on('click', (e) => {
-    marker.setLatLng(e.latlng);
-    lat = parseFloat(e.latlng.lat.toFixed(4));
-    lon = parseFloat(e.latlng.lng.toFixed(4));
-    $('latInput').value = lat.toFixed(4);
-    $('lonInput').value = lon.toFixed(4);
-    fetchAll();
+// ————— Saved Locations —————
+function getLocations() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch(e) { return []; }
+}
+function saveLocations(locs) {
+  localStorage.setItem(LS_KEY, JSON.stringify(locs));
+}
+function populateDropdown() {
+  const sel = $('savedSelect');
+  const locs = getLocations();
+  sel.innerHTML = '<option value="">— Select a saved location —</option>';
+  locs.forEach((l, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = l.name + ' (' + l.lat.toFixed(2) + ', ' + l.lon.toFixed(2) + ')';
+    sel.appendChild(opt);
   });
 }
-
-function setStatus(state, text) {
-  const dot = $('statusDot'), txt = $('statusText');
-  dot.className = 'dot ' + state;
-  txt.textContent = text;
+function loadSavedLocation() {
+  const sel = $('savedSelect');
+  if (sel.value === '') return;
+  const locs = getLocations();
+  const loc = locs[parseInt(sel.value)];
+  if (!loc) return;
+  lat = loc.lat; lon = loc.lon;
+  $('latInput').value = lat.toFixed(4);
+  $('lonInput').value = lon.toFixed(4);
+  if (map && marker) marker.setLatLng([lat, lon]);
+  if (map) map.setView([lat, lon]);
+  fetchAll();
+}
+function saveCurrentLocation() {
+  const name = prompt('Name this location:', 'Kasba Tadla');
+  if (!name || !name.trim()) return;
+  const locs = getLocations();
+  // Check if lat/lon already saved
+  const existing = locs.findIndex(l => Math.abs(l.lat - lat) < 0.01 && Math.abs(l.lon - lon) < 0.01);
+  if (existing >= 0) {
+    locs[existing].name = name.trim();
+  } else {
+    locs.push({ name: name.trim(), lat: parseFloat(lat.toFixed(4)), lon: parseFloat(lon.toFixed(4)) });
+  }
+  saveLocations(locs);
+  populateDropdown();
+}
+function deleteSavedLocation() {
+  const sel = $('savedSelect');
+  if (sel.value === '') return;
+  const locs = getLocations();
+  locs.splice(parseInt(sel.value), 1);
+  saveLocations(locs);
+  populateDropdown();
+  sel.value = '';
 }
 
-function mkDateStr(d) {
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+// ————— Period fetching —————
+async function fetchPeriodData(startDate, endDate) {
+  const params = new URLSearchParams({
+    latitude: lat, longitude: lon,
+    start_date: mkDateStr(startDate),
+    end_date: mkDateStr(endDate),
+    daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum',
+    timezone: 'auto',
+    precipitation_unit: 'mm'
+  });
+  const resp = await fetch(`https://archive-api.open-meteo.com/v1/archive?${params}`);
+  if (!resp.ok) throw new Error(`Archive HTTP ${resp.status}`);
+  const data = await resp.json();
+  const daily = data.daily || {};
+  const rains = (daily.precipitation_sum || []).filter(r => r != null);
+  const maxes = (daily.temperature_2m_max || []).filter(t => t != null);
+  const mins = (daily.temperature_2m_min || []).filter(t => t != null);
+  const totalRain = rains.reduce((a,b) => a + b, 0);
+  const avgMax = maxes.length ? maxes.reduce((a,b) => a + b, 0) / maxes.length : null;
+  const avgMin = mins.length ? mins.reduce((a,b) => a + b, 0) / mins.length : null;
+  const avgTemp = (avgMax != null && avgMin != null) ? (avgMax + avgMin) / 2 : null;
+  const absMax = maxes.length ? Math.max(...maxes) : null;
+  const absMin = mins.length ? Math.min(...mins) : null;
+  return { totalRain, avgTemp, absMax, absMin, avgMax, avgMin, points: rains.length };
 }
 
 async function fetchPeriod(days, label) {
   const now = new Date();
   const end = new Date(now);
-  end.setDate(end.getDate() - 1); // yesterday
-  const start = new Date(now);
-  start.setDate(start.getDate() - days);
-
-  // For 6 months, use approx 180 days
-  const actualDays = days === 180 ? 180 : days;
-
-  // For month view, align to ~30 days
+  end.setDate(end.getDate() - 1);
   const startD = new Date(now);
   if (days === 30) {
     startD.setMonth(startD.getMonth() - 1);
@@ -377,32 +472,8 @@ async function fetchPeriod(days, label) {
   } else {
     startD.setDate(startD.getDate() - days);
   }
-
-  const params = new URLSearchParams({
-    latitude: lat, longitude: lon,
-    start_date: mkDateStr(startD),
-    end_date: mkDateStr(end),
-    daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum',
-    timezone: 'auto',
-    precipitation_unit: 'mm'
-  });
-
-  const resp = await fetch(`https://archive-api.open-meteo.com/v1/archive?${params}`);
-  if (!resp.ok) throw new Error(`Archive HTTP ${resp.status}`);
-  const data = await resp.json();
-  const daily = data.daily || {};
-  const rains = (daily.precipitation_sum || []).filter(r => r != null);
-  const maxes = (daily.temperature_2m_max || []).filter(t => t != null);
-  const mins = (daily.temperature_2m_min || []).filter(t => t != null);
-
-  const totalRain = rains.reduce((a,b) => a + b, 0);
-  const avgMax = maxes.length ? maxes.reduce((a,b) => a + b, 0) / maxes.length : null;
-  const avgMin = mins.length ? mins.reduce((a,b) => a + b, 0) / mins.length : null;
-  const absMax = maxes.length ? Math.max(...maxes) : null;
-  const absMin = mins.length ? Math.min(...mins) : null;
-  const avgTemp = (avgMax != null && avgMin != null) ? (avgMax + avgMin) / 2 : null;
-
-  return { label, days: actualDays, totalRain, avgTemp, absMax, absMin, avgMax, avgMin, points: rains.length };
+  const r = await fetchPeriodData(startD, end);
+  return { label, days, ...r };
 }
 
 async function fetchCurrent() {
@@ -428,13 +499,18 @@ async function fetchForecast() {
   return resp.json();
 }
 
-function renderPeriods(results) {
+// ————— Rendering —————
+function renderPeriods(defaults, custom) {
+  const all = [...defaults];
+  if (custom) {
+    all.push(custom);
+  }
   const grid = $('periodGrid');
-  grid.innerHTML = results.map(r => {
-    const rainClass = r.totalRain > 200 ? 'very-high' : (r.totalRain > 80 ? 'high' : '');
+  grid.innerHTML = all.map(r => {
+    const rc = r.totalRain > 200 ? 'very-high' : (r.totalRain > 80 ? 'high' : '');
     return `<div class="period-card">
       <div class="period-name">${r.label}</div>
-      <div class="rain-total ${rainClass}">${fmt(r.totalRain)} <span style="font-size:0.4em;">mm</span></div>
+      <div class="rain-total ${rc}">${fmt(r.totalRain)} <span style="font-size:0.4em;">mm</span></div>
       <div class="rain-label">Total Precipitation</div>
       <div class="temp-row">
         <div class="temp-item">
@@ -489,6 +565,7 @@ function renderForecast(data) {
   }).join('');
 }
 
+// ————— Main fetch —————
 async function fetchAll() {
   setStatus('loading', 'FETCHING DATA...');
   $('stationId').textContent = `STATION: ${lat.toFixed(4)}°N · ${lon.toFixed(4)}°E`;
@@ -501,7 +578,7 @@ async function fetchAll() {
       fetchCurrent(),
       fetchForecast()
     ]);
-    renderPeriods([hist7, hist30, hist180]);
+    renderPeriods([hist7, hist30, hist180], customResult);
     renderCurrent(currentData);
     renderForecast(forecastData);
     $('updateTime').textContent = new Date().toLocaleString();
@@ -512,7 +589,69 @@ async function fetchAll() {
   }
 }
 
-// Event listeners
+async function fetchCustomPeriod() {
+  const startInput = $('customStart').value;
+  const endInput = $('customEnd').value;
+  if (!startInput || !endInput) {
+    alert('Select both start and end dates.');
+    return;
+  }
+  const startD = new Date(startInput);
+  const endD = new Date(endInput);
+  endD.setDate(endD.getDate() + 1); // include the end day
+  if (startD >= endD) {
+    alert('End date must be after start date.');
+    return;
+  }
+  setStatus('loading', 'FETCHING CUSTOM...');
+  try {
+    const r = await fetchPeriodData(startD, endD);
+    const days = Math.round((endD - startD) / (1000*60*60*24));
+    customResult = { label: 'Custom', totalRain: r.totalRain, avgTemp: r.avgTemp, absMax: r.absMax, absMin: r.absMin, avgMax: r.avgMax, avgMin: r.avgMin, points: r.points };
+    // Re-render with custom
+    const [hist7, hist30, hist180] = await Promise.all([
+      fetchPeriod(7, '7 Days'),
+      fetchPeriod(30, '30 Days'),
+      fetchPeriod(180, '6 Months')
+    ]);
+    renderPeriods([hist7, hist30, hist180], customResult);
+    setStatus('online', 'CUSTOM OK');
+  } catch (e) {
+    setStatus('error', 'CUSTOM ERROR: ' + e.message);
+  }
+}
+
+function setStatus(state, text) {
+  const dot = $('statusDot'), txt = $('statusText');
+  dot.className = 'dot ' + state;
+  txt.textContent = text;
+}
+
+function initMap() {
+  map = L.map('map', { zoomControl: true }).setView([lat, lon], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 18
+  }).addTo(map);
+  marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+  marker.on('dragend', () => {
+    const p = marker.getLatLng();
+    lat = parseFloat(p.lat.toFixed(4)); lon = parseFloat(p.lng.toFixed(4));
+    $('latInput').value = lat.toFixed(4);
+    $('lonInput').value = lon.toFixed(4);
+    fetchAll();
+  });
+  map.on('click', (e) => {
+    marker.setLatLng(e.latlng);
+    lat = parseFloat(e.latlng.lat.toFixed(4));
+    lon = parseFloat(e.latlng.lng.toFixed(4));
+    $('latInput').value = lat.toFixed(4);
+    $('lonInput').value = lon.toFixed(4);
+    fetchAll();
+  });
+}
+
+// ————— Event listeners —————
 $('updateBtn').addEventListener('click', () => {
   lat = parseFloat($('latInput').value) || 33.5731;
   lon = parseFloat($('lonInput').value) || -7.5898;
@@ -520,6 +659,7 @@ $('updateBtn').addEventListener('click', () => {
   $('lonInput').value = lon.toFixed(4);
   if (map && marker) marker.setLatLng([lat, lon]);
   if (map) map.setView([lat, lon]);
+  customResult = null;
   fetchAll();
 });
 
@@ -531,7 +671,23 @@ $('mapToggleBtn').addEventListener('click', () => {
   if (mapVisible && map) setTimeout(() => map.invalidateSize(), 100);
 });
 
+// Saved locations
+$('loadLocBtn').addEventListener('click', loadSavedLocation);
+$('saveLocBtn').addEventListener('click', saveCurrentLocation);
+$('delLocBtn').addEventListener('click', deleteSavedLocation);
+
+// Custom period
+$('customFetchBtn').addEventListener('click', fetchCustomPeriod);
+
 // Init
+populateDropdown();
+// Default date range: last month
+const today = new Date();
+const monthAgo = new Date(today);
+monthAgo.setMonth(monthAgo.getMonth() - 1);
+$('customEnd').value = mkDateStr(today);
+$('customStart').value = mkDateStr(monthAgo);
+
 initMap();
 fetchAll();
 setInterval(fetchAll, 600000); // 10 min refresh
