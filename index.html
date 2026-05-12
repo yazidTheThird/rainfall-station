@@ -103,6 +103,7 @@ body {
   gap: 10px;
   margin-bottom: 16px;
 }
+.period-grid { transition: opacity 0.3s; }
 .period-card {
   background: #0f1525;
   border: 1px solid #1a2a4a;
@@ -598,26 +599,36 @@ async function fetchCustomPeriod() {
   }
   const startD = new Date(startInput);
   const endD = new Date(endInput);
-  endD.setDate(endD.getDate() + 1); // include the end day
-  if (startD >= endD) {
+  // Cap end date to yesterday (archive API has no data for today/future)
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const useEnd = endD > yesterday ? yesterday : endD;
+  // Include the end day: add 1 to make it exclusive for comparison
+  const dayAfter = new Date(useEnd);
+  dayAfter.setDate(dayAfter.getDate() + 1);
+  if (startD >= dayAfter) {
     alert('End date must be after start date.');
     return;
   }
   setStatus('loading', 'FETCHING CUSTOM...');
+  $('periodGrid').style.opacity = '0.4';
   try {
-    const r = await fetchPeriodData(startD, endD);
-    const days = Math.round((endD - startD) / (1000*60*60*24));
-    customResult = { label: 'Custom', totalRain: r.totalRain, avgTemp: r.avgTemp, absMax: r.absMax, absMin: r.absMin, avgMax: r.avgMax, avgMin: r.avgMin, points: r.points };
-    // Re-render with custom
+    const r = await fetchPeriodData(startD, dayAfter);
+    const days = Math.round((dayAfter - startD) / (1000*60*60*24));
+    customResult = { label: startInput + ' → ' + endInput, totalRain: r.totalRain, avgTemp: r.avgTemp, absMax: r.absMax, absMin: r.absMin, avgMax: r.avgMax, avgMin: r.avgMin, points: r.points };
+    // Re-render with custom card
     const [hist7, hist30, hist180] = await Promise.all([
       fetchPeriod(7, '7 Days'),
       fetchPeriod(30, '30 Days'),
       fetchPeriod(180, '6 Months')
     ]);
     renderPeriods([hist7, hist30, hist180], customResult);
+    $('periodGrid').style.opacity = '1';
     setStatus('online', 'CUSTOM OK');
   } catch (e) {
+    $('periodGrid').style.opacity = '1';
     setStatus('error', 'CUSTOM ERROR: ' + e.message);
+    alert('Failed to fetch custom period:\n' + e.message);
   }
 }
 
